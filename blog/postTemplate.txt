@@ -1,0 +1,9 @@
+
+      <div class="postn">
+        <a class="title" href="{date}/{folderTitle}/">{title}</a>
+        <div class="desc">{description}</div>
+        <div class="image"><img loading="lazy" src="{date}/{folderTitle}/thumb.webp" title="image" alt="Thumbnail for '{title}', showing something."/></div>
+        <span class="date">{dateTime}</span>
+        <span class="tags"><a class="tag" href="#tag1">tag1</a>
+          <a class="tag" href="#tag2">tag2</a></span>
+      </div>

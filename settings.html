@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <title>Settings</title>
+  <!--metadata-->
+  <meta charset="utf-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <!--load files-->
+  <link rel="icon" href="favicon.ico" type="image/x-icon"/> 
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="style.css"/>
+     
+</head>
+<body>
+  <video src="resources/backgrounds/citysunset.mp4" autoplay loop muted playsinline id="videoBG"></video>
+  <nav>
+    <div><a href="index.html">Back</a></div>
+  </nav>
+  <main>
+    <div class="pageTitle">Settings</div>
+    <div class="pageDesc">Configure various options...</div>
+    <h2>Check for page updates</h2>
+    <p>Reload the page from the server (for debugging):
+    <button onclick="reloadPage()" type="button"><div id="reload">Reload page</div></button></p>
+    <div class="horizontalLine"></div>
+
+    <h2>Stored site data</h2>
+    <p>Clear site data (sessionStorage) <button onclick="deleteWebStorage()" type="button"><div id="clear">Clear</div></button></p>
+    <p id="storageInformation"><code>There is no data stored for the site</code></p>
+    <table class="hidden" id="table">
+      <thead>
+          <tr>
+              <th>Key</th>
+              <th>Value</th>
+          </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+    <p>When using audio player functions  <code>audioPlaying</code>, <code>currentTime</code>, and <code>playState</code> are used to remember audio player attributes.
+      They are discared after the tab is closed.</p>
+    <p><iframe id="commentSection" src="https://kinositecomments.web.app/settings.html" width="100%" height="300"></iframe></p>
+
+    <h2 id="jslicense"><a href="#jslicense" class="headingAnchor">#</a> Javascript License Information</h2>
+    <div class="codeBox">
+      The following is the entire license notice for the JavaScript code in this page.<br/><br/>
+        The JavaScript code in this page is free software: you can
+        redistribute it and/or modify it under the terms of the GNU
+        General Public License (GNU GPL) as published by the Free Software
+        Foundation, either version 3 of the License, or (at your option)
+        any later version.  The code is distributed WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS
+        FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.<br/><br/>
+
+        As additional permission under GNU GPL version 3 section 7, you
+        may distribute non-source (e.g., minimized or compacted) forms of
+        that code without the copy of the GNU GPL normally required by
+        section 4, provided you include this license notice and a URL
+        through which recipients can access the Corresponding Source.<br/><br/>
+    </div>
+    <p>Other materials such as images and videos may not fall under these above rules, but please link back to this site if
+      you do use any information or material (such as responding to a blog post, or using an image and linking back here). </p>
+  </main>
+
+<script>
+function reloadPage() {
+  document.getElementById("reload").innerHTML = "Reloading...";
+  document.location.reload(true)
+}
+function deleteWebStorage() {
+  sessionStorage.clear();
+  document.getElementById("clear").innerHTML = "Cleared!";
+  displayLocalStorage();
+}
+
+// Function to retrieve and display localStorage items in a table
+function displayLocalStorage() {
+  const tableBody = document.getElementById("tableBody");
+
+  // Clear existing table rows
+  tableBody.innerHTML = "";
+
+  if (sessionStorage.length == 0){
+    document.getElementById("storageInformation").classList.remove("hidden")
+    document.getElementById("table").classList.add("hidden");
+    return
+  }
+  document.getElementById("storageInformation").classList.add("hidden")
+  document.getElementById("table").classList.remove("hidden");
+
+  // Loop through sessionStorage items
+  for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      const value = sessionStorage.getItem(key);
+
+      const row = document.createElement("tr");
+      const keyCell = document.createElement("td");
+      const valueCell = document.createElement("td");
+
+      keyCell.textContent = key;
+      valueCell.textContent = value;
+
+      row.appendChild(keyCell);
+      row.appendChild(valueCell);
+
+      tableBody.appendChild(row);
+  }
+}
+
+displayLocalStorage();
+</script>
+</body>

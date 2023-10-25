@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <title>Boof Playlist</title>
+  <!--metadata-->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <!--load files-->
+  <link rel="icon" href="../../favicon.ico" type="image/x-icon"/> 
+  <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="../../style.css"/>
+<body>
+  <video src="../../resources/backgrounds/kinoworld.mp4" autoplay loop muted playsinline id="videoBG"></video>
+  <style>#videoBG{filter: blur(5px);opacity:0.2;animation:unset}</style>
+  <nav>
+    <div><a href="../index.html">Back</a></div>
+  </nav>
+  <main>
+    <div class="pageTitle">Boof Playlist</div>
+    <div class="horizontalLine"></div><br/>
+    
+
+    <noscript>
+      <audio src="Buckingham Green - Ween.mp3" controls></audio>
+      <style>.playAudio{display: none}</style>
+    </noscript>
+    <audio id="audio" src="Buckingham Green - Ween.mp3" preload="auto"></audio>
+    <button class="playAudio" onclick="playAudio()">Start Music</button>
+    <script type="text/javascript" src="../../../scripts/audioPlayer.js" defer></script>
+    <div id="audioStatus" class="hidden" data-playlist="playlist.txt">
+      <span id="BGMName">Music</span></br>
+      <button style="vertical-align: middle"><img src="" id="playIcon"></button>
+      <span id="audioProgressBar"></span>
+      &nbsp;<span id="currentTime" class="time">0:00</span> / <span id="totalTime" class="time">0:00</span>
+      <p id="playlistText" class="hidden"></p>
+    </div>
+
+    <p>Test the audio player by pressing <code>Start Music</code> or <code>Space</code></p>
+    
+
+
+    <button onclick="changeBackground()">CHANGE BACKGROUND</button>
+    <script>
+      function changeBackground(){
+        const bg = document.getElementById("videoBG");
+        bg.src = "../../resources/backgrounds/nightSky.mp4" 
+      }
+    </script>
+  </main>
+</body>
+</html>
+
+
+

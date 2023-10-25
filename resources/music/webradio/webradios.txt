@@ -1,0 +1,19 @@
+Web Radios|false
+http://media-ice.musicradio.com/ClassicFMMP3
+http://media-ice.musicradio.com/ClassicFM-M-Movies
+http://media-ice.musicradio.com/Capital
+http://media-ice.musicradio.com/Heart70s
+http://media-ice.musicradio.com/Heart80s
+http://media-ice.musicradio.com/Heart90s
+http://media-ice.musicradio.com/Heart00s
+http://media-ice.musicradio.com/LBCUK
+http://media-ice.musicradio.com/RadioXManchester
+http://media-ice.musicradio.com/RealXSManchester
+http://media-ice.musicradio.com/SmoothChill
+http://media-ice.musicradio.com/SmoothCountry
+http://media-ice.musicradio.com/SmoothNorthWest
+http://sc3.radiocaroline.net:8030/listen.m3u/;
+http://ice.actve.net/fm-evropa2-128
+http://radionorthsea.zapto.org:8008/stream
+http://stream.zeno.fm/z6hmcmh2bzzuv
+http://www.24-7nicheradio.com:8270/;

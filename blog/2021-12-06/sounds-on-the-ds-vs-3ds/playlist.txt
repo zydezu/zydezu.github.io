@@ -1,0 +1,3 @@
+Sounds on the DS vs 3DS|true
+DS.mp3
+3DS.mp3

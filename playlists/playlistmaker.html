@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist Maker</title>
+    <base href="../index.html">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video src="resources/backgrounds/clannadblossom.mp4" autoplay loop muted playsinline id="videoBG"></video>
+    <nav>
+        <a href="../sitemap.html">Back</a>
+    </nav>
+    <p>Use the options below to make a playlist of your own!</p>
+
+    <audio id="audio" src="../resources/music/webradio/loading playlist.mp3" preload="auto"></audio>
+    <script type="text/javascript" src="../../../scripts/audioPlayer.js" defer></script>
+    <div id="audioStatus" class="hidden">
+      <span id="BGMName">Music</span></br>
+      <button style="vertical-align: middle"><img src="" id="playIcon"></button>
+      <span id="audioProgressBar"></span>
+      &nbsp;<span id="currentTime" class="time">0:00</span> / <span id="totalTime" class="time">0:00</span>
+      <p id="playlistText" class="hidden"></p>
+    </div>
+
+    <noscript>
+        <blockquote class="fail"><b>JAVASCRIPT DISABLED</b><br/>
+            Javascript is needed to use this page<br/>
+            <a href="../changelog.html#jslicense">Javascript license information</a>
+        </blockquote>      
+    </noscript>
+    -------------------------------------------------------
+    <form>
+        <b>General Data</b><br/>
+        Playlist's name <input type="text" placeholder="my playlist" id="playlistnameinput" oninput="renderCodeBox()"><br/>
+        Uses album art? <input type="checkbox" id="albumArtCheck">
+    </form>
+    -------------------------------------------------------
+    <form id="itemforminput">
+        Audio URL <input type="text" placeholder="Enter URL" id="audioURLinput"><br/>
+        <div id="albumArtHideShow" class="hidden">Album art URL <input type="text" placeholder="Enter album art URL" id="albumArtURLinput"><br/></div>
+        <button onclick="addItem()">Add</button>
+        <button onclick="removeLastItem()">Remove</button>
+        <button onclick="setAudioPlayerData()">Set Data (start playing)</button>
+    </form>
+    -------------------------------------------------------
+
+    <div id="playlistOutputBox" class="codeBox">
+        No playlist data
+    </div><br/>
+    <button onclick="savePlaylist()">Save playlist</button>
+    <span class="hidden" id="clearSavedPlaylistButton">
+        <button onclick="clearPlaylist()">Clear saved playlist</button>
+        <button onclick="loadSavedPlaylist()">Load saved playlist (start playing)</button>
+    </span>
+</body>
+
+<script>
+    // setup
+    const playlistName = document.getElementById("playlistnameinput");
+    const albumArtCheckBox = document.getElementById("albumArtCheck");
+    const audioURL = document.getElementById("audioURLinput");
+    const albumArtOption = document.getElementById("albumArtHideShow");
+    const albumArtURL = document.getElementById("albumArtURLinput");
+    const playlistOutput = document.getElementById("playlistOutputBox");
+
+    checkAlbumArtCheckBox()
+    albumArtCheckBox.addEventListener("change", () => {
+        checkAlbumArtCheckBox()
+        renderCodeBox()
+    })
+
+    function checkAlbumArtCheckBox(){
+        if (albumArtCheckBox.checked){
+            albumArtOption.classList.remove("hidden")
+        } else{
+            albumArtOption.classList.add("hidden")
+        }
+    }
+
+    playlisttoinsert = []
+    document.getElementById("itemforminput").addEventListener("submit", e => {
+        e.preventDefault(); // prevent page reloading
+    });
+
+    function addItem(){
+        let builder = audioURL.value;
+        if (albumArtCheckBox.checked) builder+="|"+albumArtURL.value;
+        audioURL.value = "";
+        albumArtURL.value = "";
+        playlisttoinsert.push(builder)
+        renderCodeBox()
+    }
+
+    function removeLastItem(){
+        playlisttoinsert.pop()
+        renderCodeBox()
+    }
+
+    function renderCodeBox(){
+        playlistOutput.innerHTML = `${playlistName.value}|${albumArtCheckBox.checked}<br/>`
+        playlisttoinsert.forEach(element => {
+            playlistOutput.innerHTML += `${element}<br/>`
+        });
+    }
+
+    function setAudioPlayerData(){
+        playlisttoinsert.unshift(playlistName.value + "|" + albumArtCheckBox.checked)
+        insertPlaylistData(playlisttoinsert)
+        playAudio()
+        playlisttoinsert.shift()
+    }
+
+    const clearSavedPlaylist = document.getElementById("clearSavedPlaylistButton");
+    if (localStorage.getItem("userPlaylist") != null){
+        clearSavedPlaylist.classList.remove("hidden")
+    }
+
+    // saving and loading
+
+    function savePlaylist(){
+        playlisttoinsert.unshift(playlistName.value + "|" + albumArtCheckBox.checked)
+        localStorage.setItem("userPlaylist", JSON.stringify(playlisttoinsert))
+        playlisttoinsert.shift()
+        clearSavedPlaylist.classList.remove("hidden")
+    }
+
+    function clearPlaylist(){
+        localStorage.removeItem("userPlaylist")
+        clearSavedPlaylist.classList.add("hidden")
+    }
+
+    function loadSavedPlaylist(){
+        playlisttoinsert = JSON.parse(localStorage.getItem("userPlaylist"))
+        insertPlaylistData(playlisttoinsert)
+        playAudio()
+
+        playlistName.value = playlisttoinsert[0].split("|")[0]
+        albumArtCheckBox.checked = playlisttoinsert[0].split("|")[1]
+        checkAlbumArtCheckBox()
+        playlisttoinsert.shift()
+        renderCodeBox()
+    }
+
+</script>
+</html>

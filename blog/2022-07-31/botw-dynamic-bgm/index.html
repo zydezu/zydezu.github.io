@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <title>Dynamic BGM in BOTW | Blog</title>
+  <!--metadata-->
+  <meta charset="utf-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <!--load files-->
+  <link rel="icon" href="../../../favicon.ico" type="image/x-icon"/> 
+  <link rel="shortcut icon" href="../../../favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="../../../style.css"/>
+  
+</head>
+<body class="blogBG">
+  <div class="blog">
+    <div><a href=../..>Back</a></div>
+    <div class="pageTitle">Dynamic BGM in BOTW</div>
+    <div class="pageDesc"><span class="date">2022-07-31</span> |
+    <a class="tagHeader" href="../../index.html#games">games</a>
+    <a class="tagHeader" href="../../index.html#music">music</a></div>
+    <p>Breath of the Wild, whilst having a quiet soundtrack... the ambient music varies between regions (snowy areas, ruins, death mountain, grass, desert...).</p>
+    <p>Each town gets it's own theme... which also varies in tempo (and mood) depending on the time of day!</p>
+    <p>Have some examples!</p>
+
+    <noscript>
+      <blockquote class="fail"><b>JAVASCRIPT DISABLED</b><br/>
+        Javascript is needed to use the custom music player on this page<br/>
+        <a href="../../../changelog.html#jslicense">Javascript license information</a></blockquote>  
+      <audio src="The Legend of Zelda Breath of The Wild - Hateno Village (Day).mp3" controls></audio>
+      <style>.playAudio{display: none}</style>
+    </noscript>
+    <audio id="audio" src="The Legend of Zelda Breath of The Wild - Hateno Village (Day).mp3" preload="auto"></audio>
+    <script type="text/javascript" src="../../../scripts/audioPlayer.js" defer></script>
+    <div id="audioStatus" class="hidden" data-playlist="playlist.txt">
+      <span id="BGMName">Music</span></br>
+      <button style="vertical-align: middle"><img src="" id="playIcon"></button>
+      <span id="audioProgressBar"></span>
+      &nbsp;<span id="currentTime" class="time">0:00</span> / <span id="totalTime" class="time">0:00</span>
+      <p id="playlistText" class="hidden"></p>
+    </div>
+
+    <h2>Hateno Village - Day | Night</h2>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Hateno Village (Day).mp3')">Hateno Village (Day)</button><br/>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Hateno Village (Night).mp3')">Hateno Village (Night)</button>
+    <noscript>
+      <audio src="The Legend of Zelda Breath of The Wild - Hateno Village (Day).mp3" controls></audio>
+      <audio src="The Legend of Zelda Breath of The Wild - Hateno Village (Night).mp3" controls></audio>
+    </noscript>
+
+    <h2>Korok Forest - Day | Night</h2>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Korok Forest (Day).mp3')">Korok Forest (Day)</button><br/>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Korok Forest (Night).mp3')">Korok Forest (Night)</button>
+    <noscript>
+      <audio src="The Legend of Zelda Breath of The Wild - Korok Forest (Day).mp3" controls></audio>
+      <audio src="The Legend of Zelda Breath of The Wild - Korok Forest (Night).mp3" controls></audio>
+    </noscript>
+
+    <h2>Rito Village - Day | Night</h2>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Rito Village (Day).mp3')">Rito Village (Day)</button><br/>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Rito Village (Night).mp3')">Rito Village (Night)</button>
+    <noscript>
+      <audio src="The Legend of Zelda Breath of The Wild - Rito Village (Day).mp3" controls></audio>
+      <audio src="The Legend of Zelda Breath of The Wild - Rito Village (Night).mp3" controls></audio>
+    </noscript>
+
+    <h2>Omen of the Blood Moon</h2>
+    <p>Additionally, music can warn you of dangers... such as an approaching blood moon...</p>
+    <div class="image"><img src="bloodmoon.webp"/></div>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Omen of the Blood Moon.mp3')">Omen of the Blood Moon</button>
+    <noscript>
+      <audio controls=""><source src="The Legend of Zelda Breath of The Wild - Omen of the Blood Moon.mp3"></audio>
+    </noscript>
+    <p>You think you're hearing things... then you hear THIS. The blood moon is real. This is what schizophrenia feels like...</p>
+    <p>Hyrule Castle has both an indoor and outdoor theme, along with battle versions of each.</p>
+
+    <h2>Hyrule Castle - Exterior | Interior </h2>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Hyrule Castle (Exterior).mp3')">Hyrule Castle (Exterior)</button><br/>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Hyrule Castle (Interior).mp3')">Hyrule Castle (Interior)</button>
+    <noscript>
+      <audio controls=""><source src="The Legend of Zelda Breath of The Wild - Hyrule Castle (Exterior).mp3"></audio><br/>
+      <audio controls=""><source src="The Legend of Zelda Breath of The Wild - Hyrule Castle (Interior).mp3"></audio>
+    </noscript>
+
+    <p>An of course, the battle theme of enemies around the map has multiple build ups, depending on how long the battle lasts.</p>
+    <div class="image"><img src="field.webp"/></div>
+    <h2>Battle - Field ver 1 | Field ver 2 </h2>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Battle (Field - OST ver. 1).mp3')">Battle (Field - OST ver. 1)</button><br/>
+    <button class="playAudio" onclick="startSpecificBGM('The Legend of Zelda Breath of The Wild - Battle (Field - OST ver. 2).mp3')">Battle (Field - OST ver. 2)</button>
+    <noscript>
+      <audio controls=""><source src="The Legend of Zelda Breath of The Wild - Battle (Field - OST ver. 1).mp3"></audio><br/>
+      <audio controls=""><source src="The Legend of Zelda Breath of The Wild - Battle (Field - OST ver. 2).mp3"></audio>
+    </noscript>
+
+
+    <p>It's super cool when the tracks fade into each other! It's great!</p>
+
+  </div>
+  
+ 
+</body>

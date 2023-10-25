@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <title>Clipboard</title>
+  <!--metadata-->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <!--load files-->
+  <link rel="icon" href="favicon.ico" type="image/x-icon"/> 
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="style.css"/>
+     
+</head>
+<body>
+  <video src="resources/backgrounds/BobTowers.mp4" autoplay loop muted playsinline id="videoBG"></video>
+  <nav>
+    <span class="header">
+      <span style="font-size:15px;"><a href="index.html">Back</a></span>
+    </span>
+    <span class="header">
+      <span> Game Clipboard! </span>
+    </span>
+  </nav>
+  <main>
+    <noscript>
+      <blockquote class="fail">
+        <b>JAVASCRIPT IS DISABLED:</b><br/>
+        Javascript is disabled, enable it to allow this page to function correctly.
+      </blockquote>
+    </noscript>
+    <p>Here is the data sent by the game:</p>
+    <script>
+      var url = window.location.href;
+      let paramaters = (new URL(url)).searchParams;
+      var report = paramaters.get("report");
+      var username = paramaters.get("username");
+    </script>
+    <div class="ScrollBox">
+      <br/><script>document.write(report)</script>
+    </div>
+    <br/>Your username: <script>document.write(username)</script>
+    <br/><p>Triple click to select all of the text, then use CTRL+C or COMMAND+C to copy it.</p>
+  </main>
+</body>
+</html>

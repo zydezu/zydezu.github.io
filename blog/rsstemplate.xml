@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+
+<channel>
+   <title>zydezu's Blog</title>
+   <description>The Blog page on the zydezu website</description>
+   <link>https://zydezu.github.io/blog/</link>
+   <atom:link href="https://zydezu.github.io/blog/rss.xml" rel="self" type="application/rss+xml" />
+   <lastBuildDate>{timenow}</lastBuildDate>
+   <ttl>60</ttl>

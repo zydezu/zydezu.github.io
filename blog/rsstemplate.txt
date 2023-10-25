@@ -1,0 +1,8 @@
+   <item>
+        <title>{title}</title>
+        <link>{link}</link>
+        <description><![CDATA[{description}]]></description>
+        <media:content xmlns:media="http://search.yahoo.com/mrss/" url="{image}" medium="image" type="image/{fileType}" />
+        <guid>{link}index.html</guid>
+        <pubDate>{date}</pubDate>
+    </item>
