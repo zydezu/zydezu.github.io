@@ -1,15 +1,13 @@
 // tags
-const newposts = document.getElementsByClassName("postn"); // new posts
-const oldposts = document.getElementsByClassName("post"); // old posts
-const elements = [...newposts, ...oldposts]; // prefetch - make global
+const elements = [...document.getElementsByClassName("postn"), ...document.getElementsByClassName("post")]; // prefetch - make global
 const tagMessageElement = document.getElementById("tagMessage");
 
-//let start = performance.now();
+let start = performance.now();
 
 initCheck(); // if the page is loaded with a tag in the URL
-//addExtraData(); // run to get <div class="blog"> and paste it in the relevant page (faster than loading every page load)
+addExtraData(); // run to get <div class="blog"> and paste it in the relevant page (faster than loading every page load)
 
-//tagMessageElement.innerHTML = `<article class="sheen"><blockquote class="blank">Took ${performance.now() - start} ms to compile.</blockquote></article>`; // display tag text
+tagMessageElement.innerHTML = `<article class="sheen"><blockquote class="blank">Took ${performance.now() - start} ms to compile.</blockquote></article>`; // display tag text
 
 window.addEventListener("hashchange", function () {
   initCheck();

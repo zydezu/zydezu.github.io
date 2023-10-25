@@ -23,28 +23,28 @@ audio.addEventListener('loadedmetadata', () => { // wait for data to load
     loadedMetadata("LOADED METADATA");
 });
 
-function loadedMetadata(message){ // reset sin value
+function loadedMetadata(message) { // reset sin value
     console.log(`${message}: ${audioName}`);
     loaded = true;
     tick = -70;
 }
 
 // mediasession API
-function newMediaData(){
-    let imagesrc = audioName.replaceAll('#','%23') + ".jpg" // fallback
+function newMediaData() {
+    let imagesrc = audioName.replaceAll('#', '%23') + ".jpg" // fallback
     if (playlistOriginal.length > 1) if (playlistOriginal[playlistNumPlaying].includes("|")) imagesrc = playlistOriginal[playlistNumPlaying].split("|")[1]; // if a custom album image is listed use it
     navigator.mediaSession.metadata = new MediaMetadata({
         title: audioName,
         artist: playListTitle,
         album: playListTitle,
-        artwork: containsAlbumArt ? [{src: path+imagesrc, type: "image/jpg"}] : [{src: "https://media.architecturaldigest.com/photos/5890e88033bd1de9129eab0a/1:1/w_870,h_870,c_limit/Artist-Designed%20Album%20Covers%202.jpg", type: "image/jpg"}]
+        artwork: containsAlbumArt ? [{ src: path + imagesrc, type: "image/jpg" }] : [{ src: "https://media.architecturaldigest.com/photos/5890e88033bd1de9129eab0a/1:1/w_870,h_870,c_limit/Artist-Designed%20Album%20Covers%202.jpg", type: "image/jpg" }]
     });
 }
-navigator.mediaSession.setActionHandler('previoustrack', function() {
-    if (playlistMode==1) prevBGM();
+navigator.mediaSession.setActionHandler('previoustrack', function () {
+    if (playlistMode == 1) prevBGM();
 });
-navigator.mediaSession.setActionHandler('nexttrack', function() {
-    if (playlistMode==1) nextBGM();
+navigator.mediaSession.setActionHandler('nexttrack', function () {
+    if (playlistMode == 1) nextBGM();
 });
 // let defaultSkipTime = 10;
 // navigator.mediaSession.setActionHandler('seekbackward', function(event) {
@@ -56,30 +56,30 @@ navigator.mediaSession.setActionHandler('nexttrack', function() {
 //   const skipTime = event.seekOffset || defaultSkipTime;
 //   audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration);
 // });
-navigator.mediaSession.setActionHandler('play', async function() {
+navigator.mediaSession.setActionHandler('play', async function () {
     await audio.play();
     playState = 1
     setPlayIcon()
 });
-navigator.mediaSession.setActionHandler('pause', function() {
+navigator.mediaSession.setActionHandler('pause', function () {
     audio.pause();
     playState = 0
     setPlayIcon()
 });
-audio.addEventListener('play', function() {
+audio.addEventListener('play', function () {
     navigator.mediaSession.playbackState = 'playing';
     playState = 1
     setPlayIcon()
 });
-audio.addEventListener('pause', function() {
+audio.addEventListener('pause', function () {
     navigator.mediaSession.playbackState = 'paused';
     playState = 0
     setPlayIcon()
 });
-navigator.mediaSession.setActionHandler('seekto', function(event) {
+navigator.mediaSession.setActionHandler('seekto', function (event) {
     if (event.fastSeek && ('fastSeek' in audio)) { // use fastseek in a browser if possible
-      audio.fastSeek(event.seekTime);
-      return;
+        audio.fastSeek(event.seekTime);
+        return;
     }
     audio.currentTime = event.seekTime;
 });
@@ -87,41 +87,41 @@ navigator.mediaSession.setActionHandler('seekto', function(event) {
 //set BGM text and download link
 var audioName = "Loading...";
 setBGMText();
-function setBGMText(){
+function setBGMText() {
     audioName = audio.src.split('/').reverse()[0]; // parse url and get clean audio name
-    if (audioName.includes(".")) audioName = decodeURI(audioName.substring(0, audioName.lastIndexOf('.'))).replaceAll('%23','#')
+    if (audioName.includes(".")) audioName = decodeURI(audioName.substring(0, audioName.lastIndexOf('.'))).replaceAll('%23', '#')
     if (audioName.length < 2) audioName = audio.src // if audio name results in a 0/1 length string (usually with web radios)
 
     sessionStorage.audioPlaying = audio.src
     // set html text for the currently playing audio
-    BGMText.innerHTML = "♫ " + `<span id="BGMNameSelect">`+ audioName + `</span>`+ " | " + `<a href="${audio.src}" download target="_blank">Download</a>`;
+    BGMText.innerHTML = "♫ " + `<span id="BGMNameSelect">` + audioName + `</span>` + " | " + `<a href="${audio.src}" download target="_blank">Download</a>`;
     setTabName();
 
-    try{
-        if (playlistMode == 1){ // setup html for playlists (the previous/next buttons, the music count / playlist count)
-            let imagesrc = audioName.replaceAll('#','%23') + ".jpg" // fallback
+    try {
+        if (playlistMode == 1) { // setup html for playlists (the previous/next buttons, the music count / playlist count)
+            let imagesrc = audioName.replaceAll('#', '%23') + ".jpg" // fallback
             if (playlistOriginal[playlistNumPlaying].includes("|")) imagesrc = playlistOriginal[playlistNumPlaying].split("|")[1]; // if a custom album image is listed use it
-            if (containsAlbumArt) playlistText.innerHTML = `<img class="albumArt" src="${path}${imagesrc}"><button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying+1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
-            else playlistText.innerHTML = `<button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying+1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
+            if (containsAlbumArt) playlistText.innerHTML = `<img class="albumArt" src="${path}${imagesrc}"><button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
+            else playlistText.innerHTML = `<button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
         }
     }
-    catch(err){
+    catch (err) {
         console.log("Playlist track text placeholder doesn't exist");
         console.log(err)
     }
 }
 
-function setTabName(){
+function setTabName() {
     if (playedOnce) document.title = `${audioName}`; // change the tab title to the audio's name
 }
 
 //toggle pause if the play button is pressed again
 function playAudio() {
-    if(!playKeyPressed) togglePause(); // this is to fix tab usage 'focus' issues
+    if (!playKeyPressed) togglePause(); // this is to fix tab usage 'focus' issues
 };
 
-window.addEventListener('keydown', function(event) {
-    if(event.code == 'Space' && event.target == document.body) {
+window.addEventListener('keydown', function (event) {
+    if (event.code == 'Space' && event.target == document.body) {
         event.preventDefault(); // prevent 'Space' scrolling the page
     }
 });
@@ -132,12 +132,12 @@ playIcon.addEventListener('click', () => {
 });
 
 //change play icon
-function togglePause(){
+function togglePause() {
     playState = 1 - playState;
     sessionStorage.playState = playState;
     setPlayIcon();
     if (!loaded) return
-    if (playState){
+    if (playState) {
         audio.play().then(_ => newMediaData()) //update the media session api
         playedOnce = true;
         setTabName();
@@ -147,9 +147,9 @@ function togglePause(){
     }
 };
 
-function setPlayIcon(){
-    playIcon.src = "/resources/icons/play"+playState+".svg"; // set the svg play icon
-    if(audioStatus.className == "hidden") audioStatus.className = ""; // show the whole audio player if a pause happened (space pressed)
+function setPlayIcon() {
+    playIcon.src = "/resources/icons/play" + playState + ".svg"; // set the svg play icon
+    if (audioStatus.className == "hidden") audioStatus.className = ""; // show the whole audio player if a pause happened (space pressed)
 }
 
 //audio playing and time calculations
@@ -165,8 +165,8 @@ var heldCount = 0;
 timesAsLoadingIndicators();
 
 audio.addEventListener('timeupdate', () => { // fired at browser discretion (anti-fingerprinting)
-    if (loaded){
-        if (isLiveLoading == -1){
+    if (loaded) {
+        if (isLiveLoading == -1) {
             console.log("Live scrubbing done")
             isLiveLoading = 0;
             liveLoadingCount = 0;
@@ -176,10 +176,10 @@ audio.addEventListener('timeupdate', () => { // fired at browser discretion (ant
     }
     else {
         audioBar.style.borderLeft = 0 + "px solid #fa5252"; // values which wont cause javascript errors
-        audioBar.style = "width: " + 200 * multiplier + "px";    
-        if (!playlistMode){
+        audioBar.style = "width: " + 200 * multiplier + "px";
+        if (!playlistMode) {
             displayDuration();
-            loadedMetadata("LOADED METADATA (LATE)")    
+            loadedMetadata("LOADED METADATA (LATE)")
         }
     }
 });
@@ -187,7 +187,7 @@ audio.addEventListener('timeupdate', () => { // fired at browser discretion (ant
 audio.addEventListener('ended', () => {
     playState = 0;
     setPlayIcon(); // pause song when over (if there is no playlist)
-    if (playlistMode==1) nextBGM(); // audiomatically play next BGM in playlist if there is one
+    if (playlistMode == 1) nextBGM(); // audiomatically play next BGM in playlist if there is one
 })
 
 const displayDuration = () => {
@@ -216,23 +216,23 @@ const whilePlaying = () => {
     }
 };
 
-function setMultiplier(){
-    if (window.innerWidth <= 1000){ // activate the 'small-width' mode of the audio player
+function setMultiplier() {
+    if (window.innerWidth <= 1000) { // activate the 'small-width' mode of the audio player
         let safeAreaRight = 0;
         try { //incase browser doesn't support this
             safeAreaRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sar"));
         }
-        catch{}
+        catch { }
         return (document.documentElement.clientWidth - 200 - safeAreaRight) / 200; //account for phones with a notch
     }
-    else{
+    else {
         return 1;
     }
 }
 
-function setTimeTexts(){
+function setTimeTexts() {
     // if playing an internet-radio for instance
-    if (!isFinite(audio.duration)){ //live player you can't scrub
+    if (!isFinite(audio.duration)) { //live player you can't scrub
         isLive = true;
         isLiveOnce = true;
         duration = "LIVE"; // just show "LIVE" instead of "0:00"
@@ -242,12 +242,12 @@ function setTimeTexts(){
     }
     currentTimeContainer.textContent = calculateTime(audio.currentTime);
     totalTimeContainer.textContent = duration; // this is calculated when loading metadata
-    if (!isLive){ // using styling to set audio duration bar width, this is CPU expensive, so don't use rapidly
+    if (!isLive) { // using styling to set audio duration bar width, this is CPU expensive, so don't use rapidly
         audioBar.style = "width: " + Math.ceil(200 * multiplier - ((audio.currentTime / audio.duration) * 200 * multiplier)) + "px";
         audioBar.style.borderLeft = Math.floor((audio.currentTime / audio.duration) * 200 * multiplier) + `px solid #fa5252`;
     }
-    
-    if (duration=="LIVE") sessionStorage.currentTime = "LIVE";
+
+    if (duration == "LIVE") sessionStorage.currentTime = "LIVE";
     else sessionStorage.currentTime = audio.currentTime;
 }
 
@@ -267,7 +267,7 @@ document.addEventListener('mouseup', () => {
 });
 
 //position bar based on touch
-function positionBar(event, isTouch){
+function positionBar(event, isTouch) {
     if (!loaded) return; // dont do anything for unloaded audio
     if (isTouch) var posX = event.touches[0].clientX - event.target.getBoundingClientRect().left; //x position within the element.
     else var posX = event.clientX - event.target.getBoundingClientRect().left; //x position within the element.
@@ -283,26 +283,26 @@ function positionBar(event, isTouch){
 
 //check what keys are pressed or held
 document.addEventListener('keydown', (event) => { // listen for pressed keys
-    if(event.key == "ArrowLeft" || event.key == 'a') scrubKeyArray[0] = true; // prepare for scrubbing and hold key checks
-    if(event.key == "ArrowRight" || event.key == 'd') scrubKeyArray[1] = true;
+    if (event.key == "ArrowLeft" || event.key == 'a') scrubKeyArray[0] = true; // prepare for scrubbing and hold key checks
+    if (event.key == "ArrowRight" || event.key == 'd') scrubKeyArray[1] = true;
     if (event.code == "Space" || event.code == "Enter") playKeyPressed = true;
 });
 
 document.addEventListener('keyup', (event) => { // listen for released keys
-    if(event.key == "ArrowLeft" || event.key == 'a') scrubKeyArray[0] = false;
-    if(event.key == "ArrowRight" || event.key == 'd') scrubKeyArray[1] = false;
-    if (event.code == "Space" || event.code == "Enter"){
+    if (event.key == "ArrowLeft" || event.key == 'a') scrubKeyArray[0] = false;
+    if (event.key == "ArrowRight" || event.key == 'd') scrubKeyArray[1] = false;
+    if (event.code == "Space" || event.code == "Enter") {
         playKeyPressed = false;
         togglePause();
-    } 
+    }
 });
 
 //hold key scrubbing
 const isTrue = (element) => element == true;
 setInterval(function checkKeysDown() { // still more efficient and pleasing than using the actual javascript way of 'holding down key -> repeatedly fire input'
-    if (playedOnce){
-        if (scrubKeyArray.some(isTrue)){ // keys that are held are stored in an array (two items - left key / right key)
-            heldCount+=1;
+    if (playedOnce) {
+        if (scrubKeyArray.some(isTrue)) { // keys that are held are stored in an array (two items - left key / right key)
+            heldCount += 1;
             if (heldCount < 2 || heldCount > 40 && heldCount % 2 == 0 || heldCount > 150) { // initial skip, wait a second ... skip rapidly every '2' cycles, 
                 // then after more time, increase the length of skips
                 if (scrubKeyArray[0]) skipAudio(-5);
@@ -313,11 +313,11 @@ setInterval(function checkKeysDown() { // still more efficient and pleasing than
         }
     }
     if (!loaded && playedOnce) loadingAnimation();
-    if (isLive){
+    if (isLive) {
         loadingAnimation();
-        if (isLiveLoading == -1){
+        if (isLiveLoading == -1) {
             liveLoadingCount++;
-            if (liveLoadingCount > 450){
+            if (liveLoadingCount > 450) {
                 console.log("Live scrubbing taking too long - reloading audio")
                 reloadBGM();
                 isLiveLoading = 0;
@@ -326,24 +326,24 @@ setInterval(function checkKeysDown() { // still more efficient and pleasing than
         }
     }
     if (playlistKeyTimeOut > 0) playlistKeyTimeOut--; // for holding the next track button
-    
+
 }, 10); // repeat every 10ms
 
-function skipAudio(skip){
+function skipAudio(skip) {
     audio.currentTime += skip;
-    if (heldCount > 300) audio.currentTime+=skip; // larger skip
+    if (heldCount > 300) audio.currentTime += skip; // larger skip
 }
 
 async function loadingAnimation() { // provides information about loading and (the type of) layback of the audio
     tick = tick + 1; // used to calculate sin wave
-    let sin = (Math.sin(tick/40)+1)*0.5 // sin wave calculation
-    let colourcode = 45 + Math.round(Math.sin(tick/10)*20); // cycle through red-ish colours
+    let sin = (Math.sin(tick / 40) + 1) * 0.5 // sin wave calculation
+    let colourcode = 45 + Math.round(Math.sin(tick / 10) * 20); // cycle through red-ish colours
     if (isLive) { // make the bar full, indicating audio is playing and is live so current time can't be changed
         audioBar.style = "width: " + Math.ceil(200 * multiplier - (200 * multiplier)) + "px"; // adjust css styles to move scrubbing bar
         audioBar.style.borderLeft = Math.floor(200 * multiplier) + `px solid #fa${colourcode}52`;
     } else { // bar is moving in a sin wave (loading)
         audioBar.style = "width: " + Math.ceil(200 * multiplier - ((sin) * 200 * multiplier)) + "px";
-        audioBar.style.borderLeft = Math.floor(sin * 200 * multiplier) + `px solid #fa${colourcode}52`    
+        audioBar.style.borderLeft = Math.floor(sin * 200 * multiplier) + `px solid #fa${colourcode}52`
     }
     document.documentElement.style.setProperty('--audiohovercolour', `#fa${colourcode}52`); // set colour of hover glow
 }
@@ -364,26 +364,26 @@ async function getPlaylist() {
     path = decodeURI(audio.src).substring(0, audio.src.lastIndexOf('/')) + "/" //remove %20's (and likewise) from link, get path without the audio filename (so what folder it'd be in)
     if (!playlistData) return; //if the playlist .txt file doesn't exist - terminate
 
-    path+playlistData // make a full path to the playlist .txt file
-    fetch(path+playlistData)
+    path + playlistData // make a full path to the playlist .txt file
+    fetch(path + playlistData)
         .then((response) => response.ok ? response.text() : console.log("Playlist file doesn't exist!"))
         .then((data) => setData(data)); // javascript fetching protocol
 }
 
-function insertPlaylistData(data){
+function insertPlaylistData(data) {
     path = ""
     playlist = data
     setPlaylistData()
 }
 
-async function setData(data){
-    if (data){
+async function setData(data) {
+    if (data) {
         playlist = data.split(/\r?\n|\r|\n/g);
         setPlaylistData()
     }
 }
 
-async function setPlaylistData(){
+async function setPlaylistData() {
     playListTitle = playlist[0].split("|")[0]; //the first item in the playlist .txt file will be information
     if (playlist[0].split("|")[1].toLowerCase() == "true") {
         containsAlbumArt = true; // album art is named the same as the BGM name but with a different file extension (.jpg)
@@ -399,7 +399,7 @@ async function setPlaylistData(){
         playlistMode = 1;
         playlistLength = playlist.length;
         if (!playedOnce) audio.src = adjustAudioLink(0); // needed if the first item is a web radio link (nothing would play otherwise)
-        else if (isValidHttpUrl(playlist[0]) && playlistNumPlaying == 0){ // already 'attempted' playing (but web link will not work so reload it)
+        else if (isValidHttpUrl(playlist[0]) && playlistNumPlaying == 0) { // already 'attempted' playing (but web link will not work so reload it)
             audio.src = adjustAudioLink(0);
             reloadBGM();
         }
@@ -412,29 +412,29 @@ async function setPlaylistData(){
 
 let playlistKeyTimeOut = 0;
 document.addEventListener('keydown', (event) => {
-    if (playlistMode == 1 && playlistKeyTimeOut < 1){
-        if(event.key == "[") prevBGM();
-        if(event.key == "]") nextBGM();
+    if (playlistMode == 1 && playlistKeyTimeOut < 1) {
+        if (event.key == "[") prevBGM();
+        if (event.key == "]") nextBGM();
     }
 })
 
-function prevBGM(){
+function prevBGM() {
     playlistNumPlaying >= 1 ? playlistNumPlaying-- : playlistNumPlaying = playlistLength - 1; // wrap around
     startNewBGM();
 }
-function nextBGM(){
+function nextBGM() {
     playlistNumPlaying = (playlistNumPlaying + 1) % playlistLength; // wrap around
     startNewBGM();
 }
-const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) ) + min; //javascript random number generator
-function pickRandomTrack(){
+const randomNumber = (min, max) => Math.floor(Math.random() * (max - min)) + min; //javascript random number generator
+function pickRandomTrack() {
     playlistNumPlaying = randomNumber(0, playlistLength)
     startNewBGM();
 }
 
 function isValidHttpUrl(string) { //check if an item in the playlist .txt file is an URL
     let url;
-    try { url = new URL(string)} catch (_) {return false}
+    try { url = new URL(string) } catch (_) { return false }
     return url.protocol === "http:" || url.protocol === "https:";
 }
 
@@ -461,7 +461,7 @@ function timesAsLoadingIndicators() {
     totalTimeContainer.textContent = ". . .";
 }
 
-function startPlayingAudio(){
+function startPlayingAudio() {
     audio.play().then(_ => newMediaData()) // update the media session api as well as play audio
     setBGMText(); // set audio current time and duration (as well as tab title)
     playState = 1; // unpause
@@ -483,27 +483,27 @@ function startNewBGM() {
     startPlayingAudio();
 }
 
-function startSpecificBGM(BGM){ // for buttons that can be placed around the page that play a specific BGM from the playlist .txt file
-    if (playlistMode){
-        if (BGM.substring(0, BGM.lastIndexOf('.')) == audioName && playedOnce){ // if the button of the audio already playing is clicked, pause the audio
+function startSpecificBGM(BGM) { // for buttons that can be placed around the page that play a specific BGM from the playlist .txt file
+    if (playlistMode) {
+        if (BGM.substring(0, BGM.lastIndexOf('.')) == audioName && playedOnce) { // if the button of the audio already playing is clicked, pause the audio
             togglePause();
             return;
         }
-        if (playlist.includes(BGM)){ // find BGM from index and play it
+        if (playlist.includes(BGM)) { // find BGM from index and play it
             playlistNumPlaying = playlist.findIndex(element => element == BGM);
-            startNewBGM();    
+            startNewBGM();
         }
     }
-    else{
+    else {
         console.log("Playlist mode isn't active!");
-        if (audioName == BGM){ // error checking
+        if (audioName == BGM) { // error checking
             startNewBGM();
             console.log("Played anyways: despite the error (wrong function set)");
         }
     }
 }
 
-function reloadBGM(){ // used if live audio breaks itself
+function reloadBGM() { // used if live audio breaks itself
     resetAudioParameters();
     audio.src = audio.src; // reload currently playing audio
     startPlayingAudio();
