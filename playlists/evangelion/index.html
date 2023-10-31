@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en-GB">
+
 <head>
   <title>Evangelion Soundtrack</title>
   <!--metadata-->
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!--load files-->
-  <link rel="icon" href="../../favicon.ico" type="image/x-icon"/> 
-  <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon"/>
-  <link rel="stylesheet" href="../../style.css"/>
+  <link rel="icon" href="../../favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="../../favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+
 <body>
   <video src="../../resources/backgrounds/evadeadsea.mp4" autoplay loop muted playsinline id="videoBG"></video>
   <nav>
@@ -16,11 +19,15 @@
   </nav>
   <main>
     <div class="pageTitle">Evangelion Soundtrack</div>
-    <div class="horizontalLine"></div><br/>
+    <div class="horizontalLine"></div><br />
 
     <noscript>
       <audio src="01. 残酷な天使のテーゼ (Director's Edit Version).flac" controls></audio>
-      <style>.playAudio{display: none}</style>
+      <style>
+        .playAudio {
+          display: none
+        }
+      </style>
     </noscript>
     <audio id="audio" src="01. 残酷な天使のテーゼ (Director's Edit Version).flac" preload="auto"></audio>
     <button class="playAudio" onclick="playAudio()">Start Music</button>
@@ -36,4 +43,5 @@
     <p>Test the audio player by pressing <code>Start Music</code> or <code>Space</code></p>
   </main>
 </body>
+
 </html>
