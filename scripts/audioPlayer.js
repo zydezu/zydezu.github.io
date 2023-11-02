@@ -12,6 +12,7 @@ var playKeyPressed = false;
 var isLive = false;
 var isLiveOnce = false;
 var loaded = false;
+let bufferedTime = 0;
 let tick = -70; // sin wave of loading/live radio animation
 let isLiveLoading = 0; // used for error checking of live loading and scrubbing
 let liveLoadingCount = 0;
@@ -159,6 +160,7 @@ function setPlayIcon() {
 var durationContainer = "0:00";
 const currentTimeContainer = document.getElementById('currentTime');
 const totalTimeContainer = document.getElementById('totalTime');
+document.getElementById("audioProgressBar").innerHTML = `<span id="audioBufferBar"></span>`;
 const audioBar = document.getElementById("audioProgressBar");
 var multiplier = 1; // based on size of the screen (on low-width mode)
 var mouseDown = false;
@@ -211,7 +213,7 @@ window.addEventListener('resize', () => { // correct audio bar sizes when resizi
 
 //update time and progress bar position
 const whilePlaying = () => {
-    try {
+    try {    
         multiplier = setMultiplier();
         setTimeTexts(); // sets time and width of playing bar
     } catch { // sometimes the browser bugs out and loads audio in a different order if using back/forward cache
@@ -246,10 +248,14 @@ function setTimeTexts() {
     }
     currentTimeContainer.textContent = calculateTime(audio.currentTime);
     totalTimeContainer.textContent = duration; // this is calculated when loading metadata
+    bufferedTime = audio.buffered.end(audio.buffered.length - 1)
     if (!isLive) { // using styling to set audio duration bar width, this is CPU expensive, so don't use rapidly
         audioBar.style = "width: " + Math.ceil(200 * multiplier - ((audio.currentTime / audio.duration) * 200 * multiplier)) + "px";
         audioBar.style.borderLeft = Math.floor((audio.currentTime / audio.duration) * 200 * multiplier) + `px solid #fa5252`;
     }
+
+    const bufferBar = document.getElementById('audioBufferBar');
+    bufferBar.style.borderRight = Math.ceil(((bufferedTime-audio.currentTime) / audio.duration) * 200 * multiplier) + `px solid #ffffff40`;
 
     if (duration == "LIVE") sessionStorage.currentTime = "LIVE";
     else sessionStorage.currentTime = audio.currentTime;
@@ -257,13 +263,16 @@ function setTimeTexts() {
 
 //scrubbing and bar position
 document.getElementById('audioProgressBar').addEventListener('mousedown', (event) => {
+    if (event.target !== this) return;
     mouseDown = true;
     positionBar(event, false);
 });
 document.getElementById('audioProgressBar').addEventListener('mousemove', (event) => {
+    if (event.target !== this) return;
     if (mouseDown) positionBar(event, false);
 });
 document.getElementById('audioProgressBar').addEventListener('touchmove', (event) => {
+    if (event.target !== this) return;
     positionBar(event, true)
 });
 document.addEventListener('mouseup', () => {
@@ -540,7 +549,7 @@ async function zipTracksToDownload() {
 
     playlist.forEach((url, index) => {
         promises.push(
-            fetch((path+url).replaceAll('#', '%23'))
+            fetch((path + url).replaceAll('#', '%23'))
                 .then(response => {
                     if (response.ok) {
                         return response.blob().then(blob => {
