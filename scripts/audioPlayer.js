@@ -162,6 +162,7 @@ const currentTimeContainer = document.getElementById('currentTime');
 const totalTimeContainer = document.getElementById('totalTime');
 document.getElementById("audioProgressBar").innerHTML = `<span id="audioBufferBar"></span>`;
 const audioBar = document.getElementById("audioProgressBar");
+const bufferBar = document.getElementById('audioBufferBar');
 var multiplier = 1; // based on size of the screen (on low-width mode)
 var mouseDown = false;
 var scrubKeyArray = [false, false]; // used for calculating left/right key scrubbing speeds
@@ -213,7 +214,7 @@ window.addEventListener('resize', () => { // correct audio bar sizes when resizi
 
 //update time and progress bar position
 const whilePlaying = () => {
-    try {    
+    try {
         multiplier = setMultiplier();
         setTimeTexts(); // sets time and width of playing bar
     } catch { // sometimes the browser bugs out and loads audio in a different order if using back/forward cache
@@ -253,9 +254,7 @@ function setTimeTexts() {
         audioBar.style = "width: " + Math.ceil(200 * multiplier - ((audio.currentTime / audio.duration) * 200 * multiplier)) + "px";
         audioBar.style.borderLeft = Math.floor((audio.currentTime / audio.duration) * 200 * multiplier) + `px solid #fa5252`;
     }
-
-    const bufferBar = document.getElementById('audioBufferBar');
-    bufferBar.style.borderRight = Math.ceil(((bufferedTime-audio.currentTime) / audio.duration) * 200 * multiplier) + `px solid #ffffff40`;
+    bufferBar.style.borderRight = Math.ceil(((bufferedTime - audio.currentTime) / audio.duration) * 200 * multiplier) + `px solid #ffffff40`;
 
     if (duration == "LIVE") sessionStorage.currentTime = "LIVE";
     else sessionStorage.currentTime = audio.currentTime;
@@ -494,6 +493,7 @@ function startNewBGM() {
 
     audioBar.style.borderLeft = 0 + "px solid #fa5252"; // reset colours
     document.documentElement.style.setProperty('--audiohovercolour', '#fa5252');
+    bufferBar.style.borderRight = `0px solid #ffffff40`;
     multiplier = setMultiplier(); // set "multiplier" as to not see the adjustment of the bar width
     audioBar.style = "width: " + 200 * multiplier + "px";
     startPlayingAudio();
