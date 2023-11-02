@@ -6,6 +6,7 @@ const audioStatus = document.getElementById('audioStatus');
 const audio = document.querySelector('audio');
 let playState = 0;
 let muteState = 0; // currently unused
+let playerShownOnce = false; // to solve errors with slow loading
 let playedOnce = false; // used to ignore various keys until a BGM is first played
 var playKeyPressed = false;
 var isLive = false;
@@ -101,8 +102,9 @@ function setBGMText() {
         if (playlistMode == 1) { // setup html for playlists (the previous/next buttons, the music count / playlist count)
             let imagesrc = audioName.replaceAll('#', '%23') + ".jpg" // fallback
             if (playlistOriginal[playlistNumPlaying].includes("|")) imagesrc = playlistOriginal[playlistNumPlaying].split("|")[1]; // if a custom album image is listed use it
-            if (containsAlbumArt) playlistText.innerHTML = `<img class="albumArt" src="${path}${imagesrc}"><button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
-            else playlistText.innerHTML = `<button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button>`;
+            playlistText.innerHTML = ""
+            if (containsAlbumArt) playlistText.innerHTML = `<img class="albumArt" src="${path}${imagesrc}">`;
+            playlistText.innerHTML += `<button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button> | <button onclick="downloadAllTracks()" id="downloadAllButton">Download All</button>`;
         }
     }
     catch (err) {
@@ -133,10 +135,11 @@ playIcon.addEventListener('click', () => {
 
 //change play icon
 function togglePause() {
-    playState = 1 - playState;
+    playerShownOnce = true;
+    if (loaded) playState = 1 - playState;
+    else audio.play()
     sessionStorage.playState = playState;
     setPlayIcon();
-    if (!loaded) return
     if (playState) {
         audio.play().then(_ => newMediaData()) //update the media session api
         playedOnce = true;
@@ -148,7 +151,7 @@ function togglePause() {
 };
 
 function setPlayIcon() {
-    playIcon.src = "/resources/icons/play" + playState + ".svg"; // set the svg play icon
+    playIcon.src = "https://zydezu.github.io/resources/icons/play" + playState + ".svg"; // set the svg play icon
     if (audioStatus.className == "hidden") audioStatus.className = ""; // show the whole audio player if a pause happened (space pressed)
 }
 
@@ -180,6 +183,7 @@ audio.addEventListener('timeupdate', () => { // fired at browser discretion (ant
         if (!playlistMode) {
             displayDuration();
             loadedMetadata("LOADED METADATA (LATE)")
+            audio.play() //this is getting hacky now
         }
     }
 });
@@ -395,6 +399,8 @@ async function setPlaylistData() {
     }
     if (playlist.length > 0) {
         console.log("Got playlist");
+        isLive = false;
+        isLiveOnce = false;
         document.getElementById("playlistText").className = "visible"; // show playlist HTML code
         playlistMode = 1;
         playlistLength = playlist.length;
@@ -403,6 +409,7 @@ async function setPlaylistData() {
             audio.src = adjustAudioLink(0);
             reloadBGM();
         }
+        if (playerShownOnce) audio.play()
         setBGMText();
     }
     else {
@@ -507,4 +514,68 @@ function reloadBGM() { // used if live audio breaks itself
     resetAudioParameters();
     audio.src = audio.src; // reload currently playing audio
     startPlayingAudio();
+}
+
+// download all tracks
+let currentlyDownloadingAllTracks = false;
+function downloadAllTracks() {
+    if (currentlyDownloadingAllTracks) return;
+    document.getElementById('downloadAllButton').innerHTML = `Downloading...`;
+    currentlyDownloadingAllTracks = true;
+
+    // dynamically load script
+    var script = document.createElement('script');
+    script.onload = function () {
+        zipTracksToDownload()
+    };
+    document.head.appendChild(script);
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+}
+
+async function zipTracksToDownload() {
+    const zip = new JSZip();
+    const promises = [];
+
+    var count = 0;
+
+    playlist.forEach((url, index) => {
+        promises.push(
+            fetch((path+url).replaceAll('#', '%23'))
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob().then(blob => {
+                            const filename = `${url}`;
+                            zip.file(filename, blob);
+                            count++
+                            document.getElementById('downloadAllButton').innerHTML = `Downloading... ${Math.ceil(count / playlist.length * 100)}%`;
+                            if (count >= playlist.length) document.getElementById('downloadAllButton').innerHTML = "Compressing..."
+                        });
+                    } else {
+                        console.error(`Failed to fetch ${url}`);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error fetching ${url}: ${error}`);
+                })
+        );
+    });
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+
+    // Generate the zip file
+    const content = await zip.generateAsync({ type: 'blob' });
+
+    // Create a link element to trigger the download
+    const zipBlob = new Blob([content], { type: 'application/zip' });
+    const zipUrl = URL.createObjectURL(zipBlob);
+
+    const link = document.createElement('a');
+    link.href = zipUrl;
+    link.download = `${playListTitle}.zip`;
+    link.click();
+
+    document.getElementById('downloadAllButton').innerHTML = `Download All`;
+    URL.revokeObjectURL(zipUrl); // try to reduce RAM usage
+    currentlyDownloadingAllTracks = false;
 }
