@@ -863,12 +863,12 @@ iframe#commentSection {
 
 #audioStatus {
   position: fixed;
-  top: 20px;
+  top: 10px;
   right: 0;
-  width: 450px;
-  border-radius: 10px 0px 0px 10px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.6);
+  width: 500px;
+  border-radius: 15px 0px 0px 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background-color: rgba(0, 0, 0, 0.2);
   -webkit-user-select: none;
   user-select: none;
   transform: translateX(5px);
@@ -876,8 +876,8 @@ iframe#commentSection {
   padding: 10px;
   padding-right: calc(env(safe-area-inset-right) - 10px);
   z-index: 100;
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   touch-action: manipulation;
 }
 
@@ -890,17 +890,12 @@ iframe#commentSection {
 #playIcon {
   margin: 5px;
   border-radius: 100px;
-}
-
-button:focus #playIcon {
-  -webkit-user-select: none;
-  user-select: none;
-  outline: 2px solid rgba(255, 255, 255, 0.8);
-  filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.8));
+  vertical-align: middle;
 }
 
 #playIcon:hover {
-  filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.8));
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  filter: drop-shadow(0 0 0.2rem rgba(255, 255, 255));
 }
 
 @media screen and (max-width: 1000px) {
@@ -943,7 +938,7 @@ button:focus #playIcon {
 
 #BGMNameSelect {
   -webkit-user-select: text;
-  user-select: text;
+  user-select: all;
 }
 
 #audioProgressBar,
@@ -973,8 +968,8 @@ button:focus #playIcon {
 #currentTime,
 #totalTime {
   font-weight: 700;
-  letter-spacing: 0.02em;
-  word-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  word-spacing: 0.01em;
 }
 
 #playlistText {

@@ -23,10 +23,10 @@
     <p>Compare these!!</p>
     <noscript>
       <audio src="DS.mp3" controls></audio>
-      <style>.playAudio{display: none}</style>
+
     </noscript>
     <audio id="audio" src="DS.mp3" preload="auto"></audio>
-    <button class="playAudio" onclick="startSpecificBGM('DS.mp3')">DS.mp3</button>
+    <button onclick="startSpecificBGM('DS.mp3')">DS.mp3</button>
     <script type="text/javascript" src="../../../scripts/audioPlayer.js" defer></script>
     <div id="audioStatus" class="hidden" data-playlist="playlist.txt">
       <span id="BGMName">Music</span></br>
@@ -35,7 +35,7 @@
       &nbsp;<span id="currentTime" class="time">0:00</span> / <span id="totalTime" class="time">0:00</span>
       <p id="playlistText" class="hidden"></p>
     </div>
-    <br/><button class="playAudio" onclick="startSpecificBGM('3DS.mp3')">3DS.mp3</button>
+    <br/><button onclick="startSpecificBGM('3DS.mp3')">3DS.mp3</button>
     <noscript>
       <audio src="3DS.mp3" controls></audio>
     </noscript>
