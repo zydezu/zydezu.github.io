@@ -817,6 +817,7 @@ iframe#commentSection {
   max-height: 100%;
   max-width: 100%;
   border: none;
+  margin-top: 25px;
 }
 
 /*header buttons*/

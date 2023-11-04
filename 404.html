@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="en-GB">
+
 <head>
   <title>Error!</title>
   <!--metadata-->
-  <meta charset="utf-8"/>
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!--load files-->
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/> 
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   <video src="resources/backgrounds/EndZone.mp4" autoplay loop muted playsinline id="videoBG"></video>
   <main>
     <div class="pageTitle">404 Error</div>
     <div class="pageDesc">Page not found...</div>
     <p>This page doesn't exist... maybe you got given the wrong link...</p>
-    <p>Click <a href="index.html">here</a> to return to the main page.<br/></p>
+    <p>Click <a href="index.html">here</a> to return to the main page.<br /></p>
     <p>Page referrer: <span id="referrer"></span></p>
     <video autoplay loop muted playsinline src="./resources/gif/EternalTorture.webm"></video>
     <script>
       document.getElementById("referrer").innerHTML = document.referrer;
-      if (window.location.href != "https://zydezu.github.io/404"){window.location.href = "https://zydezu.github.io/404"}
+      if (window.location.href != "https://zydezu.github.io/404") { window.location.href = "https://zydezu.github.io/404" }
     </script>
   </main>
 </body>
+
 </html>
