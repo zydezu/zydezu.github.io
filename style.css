@@ -69,13 +69,13 @@
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   font-size: 16px;
+  color-scheme: dark;
   /*default size*/
   /*resources/backgrounds/citysunset.gif*/
   --bg: url('resources/backgrounds/spaceAnime.jpg');
   /*cursor: url(resources/cursor/arrow.cur), auto*/
   --audiohovercolour: #f86f6f;
 }
-
 /*body and text*/
 /*adjust mobile text inflation*/
 html {
@@ -269,21 +269,6 @@ a[href^="https://odysee.com"]::after {
   padding: 10px;
   overflow-y: auto;
   background: rgba(0, 0, 0, 0.3);
-}
-
-/*scroll bar style*/
-::-webkit-scrollbar {
-  width: 14px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 ::selection
