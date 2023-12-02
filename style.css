@@ -307,14 +307,22 @@ figcaption {
   display: block;
 }
 
-/*video*/
 video {
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 15px;
+}
+
+/*hack*/
+.videoContainer {
+  backdrop-filter: blur(0px);
+}
+
+.fillVideo {
+  height: 100%;
+  width: 100%;  
 }
 
 .iframeVideo {
-  border-radius: 5px;
+  border-radius: 15px;
 }
 
 video:fullscreen {
@@ -337,23 +345,23 @@ video:fullscreen {
   animation: fadeIn 1s;
 }
 
+/*scale youtube iframes just like regular videos*/
+.youtubeVideoWidescreen {
+  aspect-ratio: 16 / 9;
+  height: auto;
+  width: 100%;
+}
+
+.youtubeVideoRetro {
+  aspect-ratio: 4 / 3;
+  height: auto;
+  width: 100%;
+}
+
 @media screen and (max-width: 768px) {
   video {
-    width: 100%;
     height: 100%;
-  }
-
-  /*scale youtube iframes just like regular videos*/
-  .youtubeVideoWidescreen {
-    aspect-ratio: 16 / 9;
-    height: auto;
-    width: 100%;
-  }
-
-  .youtubeVideoRetro {
-    aspect-ratio: 4 / 3;
-    height: auto;
-    width: 100%;
+    width: 100%;  
   }
 }
 
@@ -1044,6 +1052,12 @@ iframe#commentSection {
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   position: relative;
+  transition:transform .1s;
+}
+
+.post:active,
+.postn:active {
+  transform: scale(0.96)
 }
 
 .post {
