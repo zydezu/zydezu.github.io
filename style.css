@@ -69,7 +69,6 @@
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   font-size: 16px;
-  color-scheme: dark;
   /*default size*/
   /*resources/backgrounds/citysunset.gif*/
   --bg: url('resources/backgrounds/spaceAnime.jpg');
