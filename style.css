@@ -68,6 +68,7 @@
   --sar: env(safe-area-inset-right);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
+  color-scheme: dark;
   font-size: 16px;
   /*default size*/
   /*resources/backgrounds/citysunset.gif*/
@@ -806,6 +807,7 @@ code
 
 /*comment section*/
 iframe#commentSection {
+  color-scheme: normal; /*for transparent background*/
   max-height: 100%;
   max-width: 100%;
   border: none;
