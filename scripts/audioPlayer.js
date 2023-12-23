@@ -15,6 +15,7 @@ var loaded = false;
 let tick = -70; // sin wave of loading/live radio animation
 let isLiveLoading = 0; // used for error checking of live loading and scrubbing
 let liveLoadingCount = 0;
+let showingErrorMsg = false
 var originalTabTitle = document.title; // unused
 
 //load metadata
@@ -95,7 +96,7 @@ function setBGMText() {
 
     sessionStorage.audioPlaying = audio.src
     // set html text for the currently playing audio
-    BGMText.innerHTML = "♫ " + `<span id="BGMNameSelect">` + audioName + `</span>` + " | " + `<a href="${audio.src}" download target="_blank">Download</a>`;
+    BGMText.innerHTML = `♫ <span id="BGMNameSelect">` + audioName + `</span>` + " | " + `<a href="${audio.src}" download target="_blank">Download</a>`;
     setTabName();
 
     try {
@@ -111,6 +112,13 @@ function setBGMText() {
         console.log("Playlist track text placeholder doesn't exist");
         console.log(err)
     }
+}
+
+function showErrorMessage(message) {
+    console.log(message)
+    if (!playerShownOnce) setPlayIcon();
+    showingErrorMsg = true;
+    BGMText.innerHTML = `⚠ <span id="BGMNameSelect">` + message + `</span>`;
 }
 
 function setTabName() {
@@ -148,6 +156,7 @@ function togglePause() {
     } else {
         audio.pause();
     }
+    if (showingErrorMsg) setBGMText();
 };
 
 function setPlayIcon() {
@@ -384,6 +393,8 @@ async function setData(data) {
     if (data) {
         playlist = data.split(/\r?\n|\r|\n/g);
         setPlaylistData()
+    } else {
+        showErrorMessage("The playlist file is invalid, this shouldn't happen!");
     }
 }
 
@@ -411,9 +422,6 @@ async function setPlaylistData() {
         }
         if (playerShownOnce) audio.play()
         setBGMText();
-    }
-    else {
-        console.log("Playlist file is invalid"); // an error in the playlist .txt file has occured
     }
 }
 
@@ -479,6 +487,11 @@ function startNewBGM() {
     resetAudioParameters();
     isLive = false;
     isLiveOnce = false;
+    if (!playlist.length){
+        showErrorMessage("Couldn't find requested audio...")
+        startPlayingAudio(); // try anyways
+        return
+    }
     audio.src = adjustAudioLink(playlistNumPlaying)
     audio.currentTime = 0;
     timesAsLoadingIndicators();
@@ -503,6 +516,7 @@ function startSpecificBGM(BGM) { // for buttons that can be placed around the pa
     }
     else {
         console.log("Playlist mode isn't active!");
+        showErrorMessage("Loading audio is taking a while... please check your internet connection...");
         if (audioName == BGM.substring(0, BGM.lastIndexOf('.'))) { // error checking
             startNewBGM();
             console.log("Played anyways: despite the error (wrong function set/slow internet connection)");
