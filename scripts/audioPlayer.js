@@ -503,9 +503,9 @@ function startSpecificBGM(BGM) { // for buttons that can be placed around the pa
     }
     else {
         console.log("Playlist mode isn't active!");
-        if (audioName == BGM) { // error checking
+        if (audioName == BGM.substring(0, BGM.lastIndexOf('.'))) { // error checking
             startNewBGM();
-            console.log("Played anyways: despite the error (wrong function set)");
+            console.log("Played anyways: despite the error (wrong function set/slow internet connection)");
         }
     }
 }
