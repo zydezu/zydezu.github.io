@@ -143,3 +143,211 @@
 </body>
 
 </html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="color-scheme" content="dark">
+    <style>
+        #settingsBox {
+            position: fixed;
+            left: 50%;
+            top: 47%;
+            transform: translate(-50%, -50%) scale(1);
+            max-height: 80%;
+            width: 80%;
+            max-width: 600px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            z-index: 10;
+            box-shadow: 0 0 1rem #ffffff40;
+            animation: boxPopUp 0.15s cubic-bezier(0.22, 0.61, 0.36, 1);
+            overflow-y: auto;
+        }
+
+        .backgroundBlur {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            animation: BGBlurOn .13s ease-in-out;
+        }
+
+        .settingsTitle {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .settingSubheading {
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .settingsCloseButton {
+            position: absolute;
+            float: right;
+            right: 15px;
+        }
+
+        .settingsExtraInfo {
+            opacity: 0.5;
+        }
+
+        .settingsOption {
+            float: right;
+            margin-left: 50px;
+        }
+
+        .hideSettings {
+            animation: boxClose 0.1s ease-in-out !important;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @keyframes boxPopUp {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95)
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes BGBlurOn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes boxClose {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+                visibility: visible;
+            }
+
+            99% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+                visibility: visible;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.95);
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hidden backgroundBlur" id="BGBlur"></div>
+
+    <div class="videoGlassPane" style="background-color: rgba(0, 0, 0, 0.25)"></div>
+    <video src="assets/bg/EOEBuildings2.mp4" autoplay loop muted playsinline class="backgroundVideo"></video>
+
+    I haven't added anything yet but check back because I will microblog...
+    <br/><br/>
+
+    <div class="container">
+        <div class="box">
+            font
+            testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+        </div>
+        <div class="box" onclick="viewSettings()">click this box to open the settings menu</div>
+        <!-- <div class="box"><a href="status/">expos (not done because i made this site in 2 minutes after opening Twitter)</a></div> -->
+    </div>
+
+    <div class="hidden" id="settingsBox">
+        <div class="settingsCloseButton">
+            <a href="javascript:void(0)" onclick="viewSettings()">Close</a>
+        </div>
+        <div class="settingsTitle">Settings</div>
+        <div class="settingOptions" id="settingsBoxJS">
+            <div class="settingSubheading">Apperance</div>
+            <hr />
+            Theme<a href="javascript:void(0)" class="settingsOption">Dark theme</a><br />
+            Ambient Mode <a href="javascript:void(0)" class="settingsOption">OFF</a>
+            <span class="settingsExtraInfo">(only available in dark theme)</span><br />
+
+            <br />
+            <div class="settingsTitle">Loading...</div>
+        </div>
+    </div>
+
+    <script src="assets/scripts/oneko/oneko.js"></script>
+</body>
+
+<script>
+    const settingsBox = document.getElementById("settingsBox");
+    const settingsBoxJS = document.getElementById("settingsBoxJS");
+    const BGBlur = document.getElementById("BGBlur");
+    let showingSettings = false;
+    function viewSettings() {
+        if (showingSettings) {
+            settingsBox.classList.add("hideSettings");
+            BGBlur.classList.add("hidden");
+        } else {
+            settingsBox.classList.remove("hidden");
+            settingsBox.classList.remove("hideSettings");
+
+            BGBlur.classList.remove("hidden");
+
+            BGBlur.addEventListener("click", viewSettings);
+            updateSettingsBox();
+        }
+        showingSettings = 1 - showingSettings;
+        return showingSettings;
+    };
+
+    function updateSettingsBox() {
+        var style = getComputedStyle(document.body)
+        try {
+            settingsBoxJS.innerHTML =
+        `
+        <div class="settingSubheading">Apperance</div><hr />
+        Date format<a href="javascript:void(0)" onclick="clickChangeTheme()" class="settingsOption">Month/Day</a><br />
+        Time format<a href="javascript:void(0)" onclick="clickChangeTheme()" class="settingsOption">24 hour</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><br />
+        Ambient Mode <a href="javascript:void(0)" onclick="toggleAmbientMode()" class="settingsOption">${localStorage.ambientMode == "true" ? "ON" : "OFF"}</a><span class="settingsExtraInfo">(only available in dark theme)</span><br />
+        <div class="settingSubheading">im sick of tests</div><hr />
+        Theme<a href="javascript:void(0)" onclick="clickChangeTheme()" class="settingsOption">${localStorage.currentTheme == "dark" ? "Dark" : "Light"} theme</a><br />
+        Theme<a href="javascript:void(0)" onclick="clickChangeTheme()" class="settingsOption">${localStorage.currentTheme}</a><br />
+        `
+        } catch (error) {
+            settingsBoxJS.innerHTML = `<br/>Failed to load<br/>${error}`
+        }
+    };
+
+</script>
+
+</html>
