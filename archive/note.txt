@@ -1,5 +1,0 @@
- add 'archive' links page, check LINKS folder from DESKTOP
-
- Move to a BUILD based system of sorts ( an expanded version of blog structuring / rss building ? 
- test hugo ? , like building multiple versions of the blog page, or using md/text files to 
- build a list of changelogs / web page archives ? )
