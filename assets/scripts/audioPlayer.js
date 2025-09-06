@@ -1,4 +1,14 @@
-//setup elements
+/* 
+    A javascript audio player that can play a playlist of audio files, with a custom UI 
+    playlist, and download functionality. It supports live radio streams, scrubbing, 
+    and keyboard controls. The player can be embedded in a webpage and is responsive 
+    to screen size changes.
+
+    This code was written a long time ago and probably needs updating... -_-
+    - zy
+*/
+
+// setup elements
 const playIcon = document.getElementById("playIcon");
 const BGMText = document.getElementById("BGMName");
 const playlistText = document.getElementById('playlistText');
@@ -16,30 +26,54 @@ let tick = -70; // sin wave of loading/live radio animation
 let isLiveLoading = 0; // used for error checking of live loading and scrubbing
 let liveLoadingCount = 0;
 var originalTabTitle = document.title; // unused
+let downloadingEnabled = false;
 let downloadingAllEnabled = false;
+let jsZipScriptLoaded = false;
+
+// Load JSZip script once during initial page load
+function loadJSZipScript() {
+    return new Promise((resolve, reject) => {
+        if (jsZipScriptLoaded) {
+            resolve();
+            return;
+        }
+        var script = document.createElement('script');
+        script.onload = function () {
+            jsZipScriptLoaded = true;
+            resolve();
+        };
+        script.onerror = function () {
+            reject(new Error('Failed to load JSZip script'));
+        };
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+        document.head.appendChild(script);
+
+        console.debug(`%caudioplayer.js%c > %cJSZip script loaded`, "color:#fcce27", "color:#fff", "color:#ffefb5")
+    });
+}
 
 //load metadata
 audio.addEventListener('loadedmetadata', () => { // wait for data to load
     displayDuration(); // calculate audio duration in minutes:seconds (only applys for audio html and not rest of playlist)
     setTimeTexts(); // calculates currently elapsed audio in the same format and set the texts
-    loadedMetadata("LOADED METADATA");
+    loadedMetadata("Loaded metadata");
 });
 
 function loadedMetadata(message) { // reset sin value
-    console.log(`${message}: ${audioName}`);
+    console.debug(`%caudioplayer.js%c > %c${message}: ${audioName}`, "color:#fcce27", "color:#fff", "color:#ffefb5")
     loaded = true;
     tick = -70;
 }
 
 // mediasession API
 function newMediaData() {
-    let imagesrc = audioName.replaceAll('#', '%23') + ".jpg" // fallback
+    let imagesrc = audioName.replaceAll('#', '%23') + ".png" // fallback
     if (playlistOriginal.length > 1) if (playlistOriginal[playlistNumPlaying].includes("|")) imagesrc = playlistOriginal[playlistNumPlaying].split("|")[1]; // if a custom album image is listed use it
     navigator.mediaSession.metadata = new MediaMetadata({
         title: audioName,
         artist: playListTitle,
         album: playListTitle,
-        artwork: containsAlbumArt ? [{ src: path + imagesrc, type: "image/jpg" }] : [{ src: "https://media.architecturaldigest.com/photos/5890e88033bd1de9129eab0a/1:1/w_870,h_870,c_limit/Artist-Designed%20Album%20Covers%202.jpg", type: "image/jpg" }]
+        artwork: containsAlbumArt ? [{ src: path + imagesrc, type: "image/png" }] : [{ src: "assets/media/teamemblems/hres/DEFAULT.png", type: "image/png" }]
     });
 }
 navigator.mediaSession.setActionHandler('previoustrack', function () {
@@ -96,21 +130,20 @@ function setBGMText() {
 
     sessionStorage.audioPlaying = audio.src
     // set html text for the currently playing audio
-    BGMText.innerHTML = "♫ " + `<span id="BGMNameSelect">` + audioName + `</span>` + " | " + `<a href="${audio.src}" download target="_blank">Download</a>`;
+    BGMText.innerHTML = "♫ " + `<span id="BGMNameSelect">` + audioName + `</span>` + `${downloadingEnabled ? " | " + `<a href="${audio.src}" download target="_blank">Download</a>` : ""}`;
     setTabName();
 
     try {
         if (playlistMode == 1) { // setup html for playlists (the previous/next buttons, the music count / playlist count)
-            let imagesrc = audioName.replaceAll('#', '%23') + ".jpg" // fallback
+            let imagesrc = audioName.replaceAll('#', '%23') + ".png" // fallback
             if (playlistOriginal[playlistNumPlaying].includes("|")) imagesrc = playlistOriginal[playlistNumPlaying].split("|")[1]; // if a custom album image is listed use it
             playlistText.innerHTML = ""
             if (containsAlbumArt) playlistText.innerHTML = `<img class="albumArt" src="${path}${imagesrc}">`;
             playlistText.innerHTML += `<button onclick="prevBGM()"><<< Previous</button> <button class="blankButton" onclick="pickRandomTrack()"> ${playlistNumPlaying + 1} / ${playlistLength} </button> <button onclick="nextBGM()">Next >>></button> ${downloadingAllEnabled ? ' | <button onclick="downloadAllTracks()" id="downloadAllButton">Download All</button>' : ''}`;
         }
     }
-    catch (err) {
-        console.log("Playlist track text placeholder doesn't exist");
-        console.log(err)
+    catch (error) {
+        console.error(`%caudioplayer.js%c > %cPlaylist track text placeholder doesn't exist: ${error}`, "color:#fcce27", "color:#fff", "color:#ffefb5")
     }
 }
 
@@ -144,6 +177,7 @@ function togglePause() {
     if (playState) {
         audio.play().then(_ => newMediaData()) //update the media session api
         playedOnce = true;
+        handleAudioStatusPosition();
         setTabName();
         whilePlaying();
     } else {
@@ -152,7 +186,7 @@ function togglePause() {
 };
 
 function setPlayIcon() {
-    playIcon.src = "play" + playState + ".svg"; // set the svg play icon
+    playIcon.src = `assets/media/audioplayer/play${playState}.avif`; // set the svg play icon
     if (audioStatus.className == "hidden") audioStatus.className = ""; // show the whole audio player if a pause happened (space pressed)
 }
 
@@ -161,7 +195,7 @@ var durationContainer = "0:00";
 const currentTimeContainer = document.getElementById('currentTime');
 const totalTimeContainer = document.getElementById('totalTime');
 const audioBar = document.getElementById("audioProgressBar");
-var multiplier = 1; // based on size of the screen (on low-width mode)
+let multiplier = 1; // based on size of the screen (on low-width mode)
 var mouseDown = false;
 var scrubKeyArray = [false, false]; // used for calculating left/right key scrubbing speeds
 var heldCount = 0;
@@ -171,7 +205,7 @@ timesAsLoadingIndicators();
 audio.addEventListener('timeupdate', () => { // fired at browser discretion (anti-fingerprinting)
     if (loaded) {
         if (isLiveLoading == -1) {
-            console.log("Live scrubbing done")
+            console.debug(`%caudioplayer.js%c > %cLive scrubbing done`, "color:#fcce27", "color:#fff", "color:#ffefb5")
             isLiveLoading = 0;
             liveLoadingCount = 0;
         }
@@ -183,7 +217,7 @@ audio.addEventListener('timeupdate', () => { // fired at browser discretion (ant
         audioBar.style = "width: " + 200 * multiplier + "px";
         if (!playlistMode) {
             displayDuration();
-            loadedMetadata("LOADED METADATA (LATE)")
+            loadedMetadata("Loaded metadata (LATE)")
             audio.play() //this is getting hacky now
         }
     }
@@ -217,21 +251,31 @@ const whilePlaying = () => {
         setTimeTexts(); // sets time and width of playing bar
     } catch { // sometimes the browser bugs out and loads audio in a different order if using back/forward cache
         displayDuration();
-        loadedMetadata("LOADED METADATA (LATE)")
+        loadedMetadata("Loaded metadata (LATE)")
     }
 };
 
 function setMultiplier() {
-    if (window.innerWidth <= 1000) { // activate the 'small-width' mode of the audio player
+    if (window.innerWidth <= 1000) {
         let safeAreaRight = 0;
-        try { //incase browser doesn't support this
-            safeAreaRight = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sar"));
+        let safeAreaLeft = 0;
+        
+        // Try to get safe area values
+        try {
+            const style = getComputedStyle(document.documentElement);
+            safeAreaRight = parseInt(style.getPropertyValue("--safe-area-inset-right") || 
+                                   style.getPropertyValue("env(safe-area-inset-right)")) || 0;
+            safeAreaLeft = parseInt(style.getPropertyValue("--safe-area-inset-left") || 
+                                  style.getPropertyValue("env(safe-area-inset-left)")) || 0;
+        } catch {
+            // Fallback values if env() isn't supported
+            safeAreaRight = 0;
+            safeAreaLeft = 0;
         }
-        catch { }
-        return (document.documentElement.clientWidth - 200 - safeAreaRight) / 200; //account for phones with a notch
-    }
-    else {
-        return 1;
+        
+        return (document.documentElement.clientWidth - 200 - safeAreaRight - safeAreaLeft) / 200;
+    } else {
+        return 1.2;
     }
 }
 
@@ -276,7 +320,9 @@ function positionBar(event, isTouch) {
     if (!loaded) return; // dont do anything for unloaded audio
     if (isTouch) var posX = event.touches[0].clientX - event.target.getBoundingClientRect().left; //x position within the element.
     else var posX = event.clientX - event.target.getBoundingClientRect().left; //x position within the element.
+    
     let seekingTime = (posX / 200 / multiplier) * audio.duration
+        
     if (isLiveOnce) isLiveLoading = 1; // count ticks incase loading fails
     if ('fastSeek' in audio) {
         audio.fastSeek(seekingTime);
@@ -323,7 +369,7 @@ setInterval(function checkKeysDown() { // still more efficient and pleasing than
         if (isLiveLoading == -1) {
             liveLoadingCount++;
             if (liveLoadingCount > 450) {
-                console.log("Live scrubbing taking too long - reloading audio")
+                console.debug(`%caudioplayer.js%c > %cLive scrubbing taking too long - reloading audio`, "color:#fcce27", "color:#fff", "color:#ffefb5")
                 reloadBGM();
                 isLiveLoading = 0;
                 liveLoadingCount = 0;
@@ -366,12 +412,13 @@ getPlaylist();
 
 async function getPlaylist() {
     let playlistData = document.getElementById("audioStatus").dataset.playlist; //attempt to retrieve playlist file from audioStatus class data
+    
     path = decodeURI(audio.src).substring(0, audio.src.lastIndexOf('/')) + "/" //remove %20's (and likewise) from link, get path without the audio filename (so what folder it'd be in)
     if (!playlistData) return; //if the playlist .txt file doesn't exist - terminate
 
     path + playlistData // make a full path to the playlist .txt file
     fetch(path + playlistData)
-        .then((response) => response.ok ? response.text() : console.log("Playlist file doesn't exist!"))
+        .then((response) => response.ok ? response.text() : console.error(`%caudioplayer.js%c > %cPlaylist file doesn't exist!`, "color:#fcce27", "color:#fff", "color:#ffefb5"))
         .then((data) => setData(data)); // javascript fetching protocol
 }
 
@@ -389,24 +436,30 @@ async function setData(data) {
 }
 
 async function setPlaylistData() {
-    playListTitle = playlist[0].split("|")[0]; //the first item in the playlist .txt file will be information
-    if (playlist[0].split("|")[0]) {
+    playListTitle = playlist[0].split("|")[0]; // the first item in the playlist .txt file will be information
+    if (playlist[0].split("|")[1]) {
         if (playlist[0].split("|")[1].toLowerCase() == "true") {
-            containsAlbumArt = true; // album art is named the same as the BGM name but with a different file extension (.jpg)
+            containsAlbumArt = true; // album art is named the same as the BGM name but with a different file extension (.png)
         }
     }
     if (playlist[0].split("|")[2]) {
         if (playlist[0].split("|")[2].toLowerCase() == "true") {
+            downloadingEnabled = true; // whether downloading is enabled
+        }
+    }
+    if (playlist[0].split("|")[3]) {
+        if (playlist[0].split("|")[3].toLowerCase() == "true") {
             downloadingAllEnabled = true; // whether downloadingAll enabled
         }
     }
     playlist = playlist.slice(1); // remove the first item (playlist information has already been set)
+        
     playlistOriginal = JSON.parse(JSON.stringify(playlist)) // original playlist with extra data
     for (let i = 0; i < playlist.length; i++) { // only keep audio.srcs in playlist
         playlist[i] = playlist[i].split("|")[0];
     }
     if (playlist.length > 0) {
-        console.log("Got playlist");
+        console.debug(`%caudioplayer.js%c > %cGot playlist`, "color:#fcce27", "color:#fff", "color:#ffefb5");
         isLive = false;
         isLiveOnce = false;
         document.getElementById("playlistText").className = "visible"; // show playlist HTML code
@@ -421,7 +474,7 @@ async function setPlaylistData() {
         setBGMText();
     }
     else {
-        console.log("Playlist file is invalid"); // an error in the playlist .txt file has occured
+        console.error(`%caudioplayer.js%c > %cPlaylist file is invalid`, "color:#fcce27", "color:#fff", "color:#ffefb5"); // an error in the playlist .txt file has occured
     }
 }
 
@@ -510,10 +563,10 @@ function startSpecificBGM(BGM) { // for buttons that can be placed around the pa
         }
     }
     else {
-        console.log("Playlist mode isn't active!");
+        console.debug(`%caudioplayer.js%c > %cPlaylist mode isn't active!`, "color:#fcce27", "color:#fff", "color:#ffefb5")
         if (audioName == BGM) { // error checking
             startNewBGM();
-            console.log("Played anyways: despite the error (wrong function set)");
+            console.debug(`%caudioplayer.js%c > %cPlayed anyways: despite the error (wrong function set)`, "color:#fcce27", "color:#fff", "color:#ffefb5")
         }
     }
 }
@@ -524,66 +577,114 @@ function reloadBGM() { // used if live audio breaks itself
     startPlayingAudio();
 }
 
-// download all tracks
 let currentlyDownloadingAllTracks = false;
+
 function downloadAllTracks() {
     if (currentlyDownloadingAllTracks) return;
     document.getElementById('downloadAllButton').innerHTML = `Downloading...`;
     currentlyDownloadingAllTracks = true;
 
-    // dynamically load script
-    var script = document.createElement('script');
-    script.onload = function () {
-        zipTracksToDownload()
-    };
-    document.head.appendChild(script);
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+    loadJSZipScript().then(() => {
+        zipTracksToDownload();
+    }).catch(error => {
+        console.error(`%caudioplayer.js%c > %c${error}`, "color:#fcce27", "color:#fff", "color:#ffefb5")
+        currentlyDownloadingAllTracks = false;
+        document.getElementById('downloadAllButton').innerHTML = `Download All`;
+    });
 }
 
 async function zipTracksToDownload() {
     const zip = new JSZip();
-    const promises = [];
+    let completedDownloads = 0; // Track actual completed downloads
+    
+    // Update progress function that uses the actual count
+    function updateProgress() {
+        const percent = Math.ceil(completedDownloads / playlist.length * 100);
+        document.getElementById('downloadAllButton').innerHTML = `Downloading... ${percent}%`;
+        if (completedDownloads >= playlist.length) {
+            document.getElementById('downloadAllButton').innerHTML = "Compressing...";
+        }
+    }
 
-    var count = 0;
+    const promises = playlist.map((url, index) => {
+        const filename = decodeURI(url.substring(url.lastIndexOf('/') + 1).replace(/\?.*/, ''));
 
-    playlist.forEach((url, index) => {
-        promises.push(
-            fetch((path + url).replaceAll('#', '%23'))
-                .then(response => {
-                    if (response.ok) {
-                        return response.blob().then(blob => {
-                            const filename = `${url}`;
-                            zip.file(filename, blob);
-                            count++
-                            document.getElementById('downloadAllButton').innerHTML = `Downloading... ${Math.ceil(count / playlist.length * 100)}%`;
-                            if (count >= playlist.length) document.getElementById('downloadAllButton').innerHTML = "Compressing..."
-                        });
-                    } else {
-                        console.error(`Failed to fetch ${url}`);
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error fetching ${url}: ${error}`);
-                })
-        );
+        return fetch((path + url).replaceAll('#', '%23'))
+            .then(response => {
+                if (response.ok) {
+                    return response.blob().then(blob => {
+                        zip.file(filename, blob);
+                        completedDownloads++; // Increment when a file is actually added
+                        updateProgress();
+                    });
+                } else {
+                    console.error(`%caudioplayer.js%c > %cFailed to fetch ${url}`, "color:#fcce27", "color:#fff", "color:#ffefb5");
+                    completedDownloads++; // Still count as completed (even if failed)
+                    updateProgress();
+                }
+            })
+            .catch(error => {
+                console.error(`%caudioplayer.js%c > %cError fetching ${url}: ${error}`, "color:#fcce27", "color:#fff", "color:#ffefb5");
+                completedDownloads++; // Still count as completed (even if error)
+                updateProgress();
+            });
     });
 
-    // Wait for all promises to resolve
-    await Promise.all(promises);
+    try {
+        await Promise.all(promises);
 
-    // Generate the zip file
-    const content = await zip.generateAsync({ type: 'blob' });
+        const content = await zip.generateAsync({ type: 'blob' });
+        const zipBlob = new Blob([content], { type: 'application/zip' });
+        const zipUrl = URL.createObjectURL(zipBlob);
 
-    // Create a link element to trigger the download
-    const zipBlob = new Blob([content], { type: 'application/zip' });
-    const zipUrl = URL.createObjectURL(zipBlob);
+        const link = document.createElement('a');
+        link.href = zipUrl;
+        link.download = `${playListTitle}.zip`;
+        link.click();
 
-    const link = document.createElement('a');
-    link.href = zipUrl;
-    link.download = `${playListTitle}.zip`;
-    link.click();
-
-    document.getElementById('downloadAllButton').innerHTML = `Download All`;
-    URL.revokeObjectURL(zipUrl); // try to reduce RAM usage
-    currentlyDownloadingAllTracks = false;
+        document.getElementById('downloadAllButton').innerHTML = `Download All`;
+        URL.revokeObjectURL(zipUrl);
+        currentlyDownloadingAllTracks = false;
+    } catch (error) {
+        console.error(`%caudioplayer.js%c > %c${error}`, "color:#fcce27", "color:#fff", "color:#ffefb5");
+        currentlyDownloadingAllTracks = false;
+        document.getElementById('downloadAllButton').innerHTML = `Download All`;
+    }
 }
+
+function handleAudioStatusPosition() {
+	const audioStatus = document.getElementById('audioStatus');
+	const main = document.querySelector('main');
+	const footer = document.querySelector('footer');
+
+	if (!audioStatus || !main || !footer) return;
+
+	const isMobile = window.innerWidth <= 1000;
+
+	if (!isMobile) {
+		audioStatus.style.position = '';
+		audioStatus.style.bottom = '';
+		main.style.paddingBottom = '';
+		return;
+	}
+
+	if (typeof playedOnce !== 'undefined' && playedOnce) {
+		main.style.paddingBottom = '125px';
+	} else {
+		main.style.paddingBottom = '';
+	}
+
+    const footerRect = footer.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    if (footerRect.top < windowHeight) {
+        audioStatus.style.bottom = `${windowHeight - footerRect.top + 25}px`;
+    } else {
+        audioStatus.style.bottom = '25px';
+    }
+}
+
+// Attach listeners
+window.addEventListener('scroll', handleAudioStatusPosition);
+window.addEventListener('resize', handleAudioStatusPosition);
+document.addEventListener('DOMContentLoaded', handleAudioStatusPosition);
